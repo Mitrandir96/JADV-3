@@ -1,5 +1,7 @@
 package ru.netology;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -12,7 +14,8 @@ public class Main {
     static AtomicInteger count4 = new AtomicInteger();
     static AtomicInteger count5 = new AtomicInteger();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+
 
 
         Random random = new Random();
@@ -21,7 +24,7 @@ public class Main {
             texts[i] = generateText("abc", 3 + random.nextInt(3));
         }
 
-        new Thread(() -> {
+        Runnable logic1 = () -> {
             for (String text : texts) {
                 if (text.length() == Length_3) {
                     if (text.equals(new StringBuilder(text).reverse().toString())) {
@@ -39,9 +42,9 @@ public class Main {
                     }
                 }
             }
-        }).start();
+        };
 
-        new Thread(() -> {
+        Runnable logic2 = () -> {
             for (String text : texts) {
                 if (text.length() == Length_3) {
                     boolean str = true;
@@ -80,9 +83,9 @@ public class Main {
                     }
                 }
             }
-        }).start();
+        };
 
-        new Thread(() -> {
+        Runnable logic3 = () -> {
             for (String text : texts) {
                 if (text.length() == Length_3) {
                     boolean str = true;
@@ -121,7 +124,25 @@ public class Main {
                     }
                 }
             }
-        }).start();
+        };
+
+        Thread thread1 = new Thread(logic1);
+        Thread thread2 = new Thread(logic2);
+        Thread thread3 = new Thread(logic3);
+
+        List<Thread> threads = new ArrayList<>();
+
+        thread1.start();
+        thread2.start();
+        thread3.start();
+
+        threads.add(thread1);
+        threads.add(thread2);
+        threads.add(thread3);
+
+        for (Thread thread : threads) {
+            thread.join();
+        }
 
         System.out.println("Красивых слов с длиной 3: " + count3);
         System.out.println("Красивых слов с длиной 4: " + count4);
